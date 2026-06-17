@@ -3,18 +3,15 @@ import sqlite3
 
 ##### Part I: Basic Filtering #####
 
-# Create the connection
-# Note the connect is 'conn1' since there will be multiple .db used
 conn1 = sqlite3.connect('planets.db')
 
-# Select all
 pd.read_sql("""SELECT * FROM planets; """, conn1)
 
 # STEP 1
 df_no_moons = pd.read_sql("""
 SELECT *
 FROM planets
-WHERE number_of_moons = 0;
+WHERE num_of_moons = 0;
 """, conn1)
 
 # STEP 2
@@ -37,7 +34,7 @@ WHERE mass <= 1.00;
 df_mass_moon = pd.read_sql("""
 SELECT *
 FROM planets
-WHERE number_of_moons >= 1
+WHERE num_of_moons >= 1
   AND mass < 1.00;
 """, conn1)
 
@@ -50,26 +47,20 @@ WHERE color LIKE '%blue%';
 
 ##### Part 3: Ordering and Limiting #####
 
-# STEP 0
-
-# Create a connection
-# Note the connect is 'conn2' since they will be multiple .db used
 conn2 = sqlite3.connect('dogs.db')
 
-# Select all
 pd.read_sql("SELECT * FROM dogs;", conn2)
 
 # STEP 6
-# Hungry dogs sorted youngest to oldest (age ASC)
 df_hungry = pd.read_sql("""
 SELECT name, age, breed
 FROM dogs
 WHERE hungry = 1
 ORDER BY age ASC;
 """, conn2)
+df_hungry = df_hungry.where(pd.notnull(df_hungry), None)
 
 # STEP 7
-# Hungry dogs ages 2-7, sorted alphabetically by name
 df_hungry_ages = pd.read_sql("""
 SELECT name, age, hungry
 FROM dogs
@@ -79,7 +70,6 @@ ORDER BY name ASC;
 """, conn2)
 
 # STEP 8
-# 4 oldest dogs, result sorted alphabetically by breed
 df_4_oldest = pd.read_sql("""
 SELECT name, age, breed
 FROM (
@@ -94,15 +84,9 @@ ORDER BY breed ASC;
 
 ##### Part 4: Aggregation #####
 
-# STEP 0
-
-# Create a connection
-# Note the connect is 'conn3' since they will be multiple .db used
 conn3 = sqlite3.connect('babe_ruth.db')
 
-# Select all
-pd.read_sql("""
-SELECT * FROM babe_ruth_stats; """, conn3)
+pd.read_sql("""SELECT * FROM babe_ruth_stats; """, conn3)
 
 # STEP 9
 df_ruth_years = pd.read_sql("""
@@ -127,13 +111,13 @@ GROUP BY team;
 """, conn3)
 
 # STEP 12
+
 df_at_bats = pd.read_sql("""
-SELECT team, AVG(AB) AS average_at_bats
+SELECT team, AVG(at_bats) AS average_at_bats
 FROM babe_ruth_stats
 GROUP BY team
-HAVING AVG(AB) > 200;
+HAVING AVG(at_bats) > 200;
 """, conn3)
-
 
 conn1.close()
 conn2.close()
